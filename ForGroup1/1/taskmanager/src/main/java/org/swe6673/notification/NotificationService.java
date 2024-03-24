@@ -34,18 +34,15 @@ public class NotificationService {
         }
     }
 
-    public NotificationPreferences getNotificationPreferences(String userEmail) {
-        NotificationPreferences notificationPreferences = new NotificationPreferences(userEmail);
-        return  notificationPreferences;
+    public NotificationPreferences getNotificationPreferences(String userEmail, boolean optInForEmail) {
+        NotificationPreferences notificationPreferences = new NotificationPreferences();
+        notificationPreferences.setNotificationPreferences(userEmail, optInForEmail);
+        return notificationPreferences;
     }
 
     public void updateNotificationPreferences(String userEmail, NotificationPreferences preferences) {
         // TODO
-       if(preferences.isOptInForEmail()){
-           preferences.setOptInForEmail(false);
-       }
-       else{
-           preferences.setOptInForEmail(true);
-       }
+       //preferences.setNotificationPreferences(userEmail);
+
     }
 }
