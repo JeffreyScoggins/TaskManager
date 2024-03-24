@@ -119,8 +119,8 @@ public class Task implements Comparable<Task> {
         this.usersInvolved = usersInvolved;
     }
 
-    public void addComment(String comment) {
-        comments.add(comment);
+    public void addComment(String commentText) {
+        comments.add(commentText);
     }
 
     public List<String> getUsersInvolved() {
@@ -128,6 +128,7 @@ public class Task implements Comparable<Task> {
     }
 
     public List<String> getComments() {
+
         return comments;
     }
 }
