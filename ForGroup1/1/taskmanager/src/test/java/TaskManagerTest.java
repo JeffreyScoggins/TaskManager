@@ -56,13 +56,14 @@ public class TaskManagerTest {
         assertEquals(task, tasks.get(0), () -> "Task Manager should contain the added task.");
     }
 
-    /*
+
     @Test
     void testAddNullTask() {
-        assertThrows(IllegalArgumentException.class, () -> taskManager.addTask(null),
-                "Adding a null task should throw IllegalArgumentException.");
+
+       assertThrows(NullPointerException.class, () -> taskManager.addTask(null),
+                "Adding a null task should throw NullPointerException.");
     }
-    */
+
     @Test
     @DisplayName("get all overdue tasks")
     public void testGetAllOverdueTasks() {

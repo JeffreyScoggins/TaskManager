@@ -1,214 +1,150 @@
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInfo;
 import org.swe6673.task.Task;
 import org.swe6673.taskmanager.TaskManager;
+import org.swe6673.notification.NotificationService;
+import org.swe6673.notification.NotificationPreferences;
 
 import java.time.LocalDate;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
-@DisplayName("<= Task Manager Specification =>")
-public class TaskManagerTest {
-
-    private TaskManager taskManager;
-
-    private TaskManagerTest(TestInfo testInfo) {
-        System.out.println("Working on test " + testInfo.getDisplayName());
-    }
-
-    @BeforeEach
-    void init() throws Exception {
-        taskManager = new TaskManager();
-    }
+public class NotificationTest {
 
     @Test
-    @DisplayName("is empty before adding tasks ")
-    public void taskManagerEmpty() throws Exception {
-        List<Task> tasks = taskManager.tasks();
-        assertTrue(tasks.isEmpty(), () -> "Task Manager should be empty.");
-    }
-
-    @Test
-    @DisplayName("checks to verify the amount of tasks in manager if added")
-    void taskManagerContainsNumberOfTasksAdded() {
-        LocalDate approachingDeadline = null;
-        Task task1 = new Task("Berevenditto", approachingDeadline, false);
-        Task task2 = new Task("Berevenditto", approachingDeadline, false);
-        taskManager.addTask(task1);
-        taskManager.addTask(task2);
-        List<Task> tasks = taskManager.tasks();
-        assertEquals(2, tasks.size(), () -> "Task manager should have two tasks.");
-    }
-
-    @Test
-    @DisplayName("create a new task")
-    public void testAddTask() {
-        // Test adding a new task
-        LocalDate approachingDeadline = null;
-        Task task = new Task("Task 1", approachingDeadline, false);
-        taskManager.addTask(task);
-        List<Task> tasks = taskManager.tasks();
-        assertEquals(1, tasks.size(), () -> "Task Manager should contain 1 task.");
-        assertEquals(task, tasks.get(0), () -> "Task Manager should contain the added task.");
-    }
-
-    /*
-    @Test
-    void testAddNullTask() {
-        assertThrows(IllegalArgumentException.class, () -> taskManager.addTask(null),
-                "Adding a null task should throw IllegalArgumentException.");
-    }
-    */
-    @Test
-    @DisplayName("get all overdue tasks")
-    public void testGetAllOverdueTasks() {
-        LocalDate approachingDeadline = LocalDate.now().minusDays(10);
-        Task task1 = new Task("Task 1", approachingDeadline, false);
-        Task task2 = new Task("Task 2", approachingDeadline, false);
-        taskManager.addTask(task1);
-        taskManager.addTask(task2);
-        List<Task> overdueTasks = taskManager.getOverdueTasks();
-        assertEquals(2, overdueTasks.size(), () -> "Task Manager should contain 2 overdue tasks.");
-    }
-
-    @Test
-    @DisplayName("get task by name")
-    public void testGetTaskByName() {
-        LocalDate approachingDeadline = LocalDate.now();
-        Task task1 = new Task("Task 1", approachingDeadline, false);
-        Task task2 = new Task("Task 2", approachingDeadline, false);
-        taskManager.addTask(task1);
-        taskManager.addTask(task2);
-        Task foundTask = taskManager.getTaskByName("Task 1");
-        assertEquals(task1, foundTask, () -> "Task Manager should return the task with the specified name.");
-    }
-
-    @Test
-    @DisplayName("update an existing task")
-    public void testUpdateTask() {
-        // Test updating a task
+    public void testNotificationOnDeadlines() {
         TaskManager taskManager = new TaskManager();
-        LocalDate approachingDeadline = null;
-        Task task = new Task("Task 1", approachingDeadline, false);
+        LocalDate today = LocalDate.now();
+
+        LocalDate approachingDeadline = today.plusDays(2);
+        Task approachingTask = new Task("Task with Approaching Deadline", approachingDeadline, false);
+        taskManager.addTask(approachingTask);
+
+        NotificationService notificationService = new NotificationService();
+
+        notificationService.checkApproachingDeadlines();
+
+        // Test
+        assertTrue(notificationService.hasNotificationFor(approachingTask));
+    }
+
+    @Test
+    public void testNotificationOnOverdue() {
+        TaskManager taskManager = new TaskManager();
+        LocalDate today = LocalDate.now();
+
+        LocalDate overdueDeadline = today.minusDays(1);
+        Task overdueTask = new Task("Overdue Task", overdueDeadline, false);
+        taskManager.addTask(overdueTask);
+
+        NotificationService notificationService = new NotificationService();
+
+        notificationService.checkApproachingDeadlines();
+
+        // Test
+        assertTrue(notificationService.hasNotificationFor(overdueTask));
+    }
+
+    @Test
+    public void testNotificationOnFuture() {
+        TaskManager taskManager = new TaskManager();
+        LocalDate today = LocalDate.now();
+
+        LocalDate futureDeadline = today.plusMonths(1);
+        Task futureTask = new Task("Future Task", futureDeadline, false);
+        taskManager.addTask(futureTask);
+
+        NotificationService notificationService = new NotificationService();
+
+        notificationService.checkApproachingDeadlines();
+
+        // Test
+        assertTrue(notificationService.hasNotificationFor(futureTask));
+    }
+
+    @Test
+    public void testNotificationOnComment() {
+        TaskManager taskManager = new TaskManager();
+        LocalDate today = LocalDate.now();
+        LocalDate approachingDeadline = today.plusDays(2);
+
+        Task task = new Task("Task with Approaching Deadline", approachingDeadline, false);
         taskManager.addTask(task);
-        taskManager.updateTask(task, "Updated Task 1");
-        List<Task> tasks = taskManager.tasks();
-        assertEquals("Updated Task 1", tasks.get(0).getName(), () -> "Task Manager should contain the updated task.");
 
-    }
+        NotificationService notificationService = new NotificationService();
 
-    @Test
-    @DisplayName("mark an existing task as completed")
-    public void testMarkTaskAsCompleted() {
-        // Test marking a task as complete
+        String testComment = "This is a test comment.";
+        task.addComment(testComment);
 
-        LocalDate approachingDeadline = null;
-        Task task = new Task("Task 1", approachingDeadline, false);
-        taskManager.addTask(task);
-        taskManager.markTaskAsCompleted(task);
-        List<Task> tasks = taskManager.tasks();
-        assertEquals(true, tasks.get(0).isCompleted(), () -> "Task should be marked as completed.");
+        notificationService.notifyUsersOnComment(task);
+
+        List<String> expectedComments = new ArrayList<>();
+        expectedComments.add(testComment);
+
+        List<String> actualComments = task.getComments();
+
+        assertEquals(expectedComments, actualComments, "Expected match");
     }
 
 
     @Test
-    @DisplayName("get all completed tasks")
-    public void testGetAllCompletedTasks() {
+    public void testNotificationPreferences() {
+        NotificationService notificationService = new NotificationService();
+        String userEmail = "user1@example.com";
 
-        LocalDate approachingDeadline = null;
-        Task task1 = new Task("Task 1", approachingDeadline, false);
-        Task task2 = new Task("Task 2", approachingDeadline, false);
-        taskManager.addTask(task1);
-        taskManager.addTask(task2);
-        taskManager.markTaskAsCompleted(task1);
-        List<Task> completedTasks = taskManager.getCompletedTasks();
-        assertEquals(1, completedTasks.size(), () -> "Task Manager should contain 1 completed task.");
-        assertTrue(completedTasks.contains(task1), () -> "Task Manager should contain task1 as completed.");
-        assertFalse(completedTasks.contains(task2), () -> "Task Manager should not contain task2 as completed.");
+        NotificationPreferences initialPreferences = notificationService.getNotificationPreferences(userEmail, true);
+
+        initialPreferences.setOptInForEmail(userEmail, true);
+
+        notificationService.updateNotificationPreferences(userEmail, initialPreferences);
+
+        NotificationPreferences updatedPreferences = notificationService.getNotificationPreferences(userEmail, true);
+
+        assertEquals(true, updatedPreferences.isOptInForEmail(userEmail), "Expected to be true");
+
     }
 
     @Test
-    @DisplayName("get all tasks")
-    public void testGetAllTasks() {
+    public void testNotificationPreferencesFalse() {
+        NotificationService notificationService = new NotificationService();
+        String userEmail = "user2@example.com";
 
-        LocalDate approachingDeadline = null;
-        Task task1 = new Task("Task 1", approachingDeadline, false);
-        Task task2 = new Task("Task 2", approachingDeadline, false);
-        taskManager.addTask(task1);
-        taskManager.addTask(task2);
-        List<Task> tasks = taskManager.tasks();
-        assertEquals(2, tasks.size(), () -> "Task Manager should contain 2 tasks.");
-        assertTrue(tasks.contains(task1), () -> "Task Manager should contain task1.");
-        assertTrue(tasks.contains(task2), () -> "Task Manager should contain task2.");
+        NotificationPreferences initialPreferences = notificationService.getNotificationPreferences(userEmail, true);
+
+        initialPreferences.setOptInForEmail(userEmail, true);
+
+        notificationService.updateNotificationPreferences(userEmail, initialPreferences);
+
+        NotificationPreferences updatedPreferences = notificationService.getNotificationPreferences(userEmail, false);
+
+        assertEquals(false, updatedPreferences.isOptInForEmail(userEmail), "Expected to fail");
+
     }
 
     @Test
-    public void testDeleteTask() {
-        // Test deleting a task
-        LocalDate approachingDeadline = null;
-        Task task = new Task("Task 1", approachingDeadline, false);
-        taskManager.addTask(task);
-        taskManager.deleteTask(task);
-        List<Task> tasks = taskManager.tasks();
-        assertEquals(0, tasks.size(), () -> "Task Manager should be empty after deleting the task.");
-    }
+    //This may be the same as above wanted to showcase changing
+    public void testUpdateNotificationPreferences() {
+        NotificationService notificationService = new NotificationService();
+        String userEmail = "user1@example.com";
 
-    @Test
-    @DisplayName("get all incomplete tasks")
-    public void testGetAllIncompleteTasks() {
+        NotificationPreferences initialPreferences = notificationService.getNotificationPreferences(userEmail, true);
 
-        LocalDate approachingDeadline = null;
-        Task task1 = new Task("Task 1", approachingDeadline, true);
-        Task task2 = new Task("Task 2", approachingDeadline, false);
-        taskManager.addTask(task1);
-        taskManager.addTask(task2);
-        taskManager.markTaskAsCompleted(task1);
-        List<Task> incompleteTasks = taskManager.getIncompleteTasks();
-        assertEquals(1, incompleteTasks.size(), () -> "Task Manager should contain 1 incomplete task.");
-        assertFalse(incompleteTasks.contains(task1), () -> "Task Manager should not contain task1 as incomplete.");
-        assertTrue(incompleteTasks.contains(task2), () -> "Task Manager should contain task2 as incomplete.");
-    }
+        notificationService.updateNotificationPreferences(userEmail, initialPreferences);
 
-    @Test
-    @DisplayName("if add is called without parameters return empty List")
-    public void emptyTaskManagerWhenAddIsCalledWithoutTasks() {
+        initialPreferences.setOptInForEmail(userEmail, true);
 
-        LocalDate approachingDeadline = null;
-        Task task = new Task("Task 1", approachingDeadline, false);
-        taskManager.addTask();
-        List<Task> tasks = taskManager.tasks();
-        assertTrue(tasks.isEmpty(), () -> "Task manager should be empty.");
-    }
+        NotificationPreferences updatedPreferences = notificationService.getNotificationPreferences(userEmail, true);
+        assertTrue(updatedPreferences.isOptInForEmail(userEmail), "True");
 
+        notificationService.updateNotificationPreferences(userEmail, initialPreferences);
 
-    @Test
-    @DisplayName("ensure task is immutable for client")
-    void tasksIsImmutableForClient() {
-        LocalDate approachingDeadline = null;
-        Task task1 = new Task("Round One Lifting", approachingDeadline, false);
-        taskManager.addTask(task1);
-        List<Task> tasks = taskManager.tasks();
-        try {
-            tasks.add(new Task("Jumping Jacks", approachingDeadline, false));
-            fail(() -> "Should not be able to add tasks to Manager");
-        } catch (Exception e) {
-            assertTrue(e instanceof UnsupportedOperationException, () -> "Should throw UnsupportedOperationException.");
-        }
-    }
+        initialPreferences.setOptInForEmail(userEmail,false);
 
-    @Test
-    @DisplayName("arrange task by title")
-    void ManagerArrangedByTitle() {
-        LocalDate approachingDeadline = null;
-        taskManager.addTask(new Task("One", approachingDeadline, false),new Task("Two", approachingDeadline, false), new Task("Five", approachingDeadline, false));
-        System.out.println(taskManager.toString());
-        List<Task> tasks = taskManager.arrange();
-        assertEquals(Arrays.asList(tasks.get(0),tasks.get(1),tasks.get(2)), tasks, () -> "Tasks in a manager should be arranged alphabetically by  title");
-        System.out.println(tasks.toString());
+        updatedPreferences = notificationService.getNotificationPreferences(userEmail, false);
+        assertFalse(updatedPreferences.isOptInForEmail(userEmail), "False");
     }
 
 

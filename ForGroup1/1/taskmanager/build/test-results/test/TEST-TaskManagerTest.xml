@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="&lt;= Task Manager Specification =&gt;" tests="15" skipped="0" failures="0" errors="0" timestamp="2024-03-24T17:44:27" hostname="ROG" time="0.147">
+  <properties/>
+  <testcase name="create a new task" classname="TaskManagerTest" time="0.055"/>
+  <testcase name="is empty before adding tasks" classname="TaskManagerTest" time="0.005"/>
+  <testcase name="get all completed tasks" classname="TaskManagerTest" time="0.018"/>
+  <testcase name="get all tasks" classname="TaskManagerTest" time="0.004"/>
+  <testcase name="update an existing task" classname="TaskManagerTest" time="0.002"/>
+  <testcase name="if add is called without parameters return empty List" classname="TaskManagerTest" time="0.003"/>
+  <testcase name="mark an existing task as completed" classname="TaskManagerTest" time="0.003"/>
+  <testcase name="ensure task is immutable for client" classname="TaskManagerTest" time="0.001"/>
+  <testcase name="testAddNullTask()" classname="TaskManagerTest" time="0.003"/>
+  <testcase name="testDeleteTask()" classname="TaskManagerTest" time="0.002"/>
+  <testcase name="get all overdue tasks" classname="TaskManagerTest" time="0.002"/>
+  <testcase name="arrange task by title" classname="TaskManagerTest" time="0.007"/>
+  <testcase name="checks to verify the amount of tasks in manager if added" classname="TaskManagerTest" time="0.002"/>
+  <testcase name="get task by name" classname="TaskManagerTest" time="0.002"/>
+  <testcase name="get all incomplete tasks" classname="TaskManagerTest" time="0.003"/>
+  <system-out><![CDATA[Working on test <= Task Manager Specification =>
+Working on test <= Task Manager Specification =>
+Working on test <= Task Manager Specification =>
+Task{taskName='Task 1', due_date=2024-03-24, isCompleted=true}
+Working on test <= Task Manager Specification =>
+Working on test <= Task Manager Specification =>
+Working on test <= Task Manager Specification =>
+Working on test <= Task Manager Specification =>
+Working on test <= Task Manager Specification =>
+Working on test <= Task Manager Specification =>
+Working on test <= Task Manager Specification =>
+Working on test <= Task Manager Specification =>
+Task{taskName='Task 1', due_date=2024-03-24, isCompleted=false}
+Task{taskName='Task 2', due_date=2024-03-24, isCompleted=false}
+Working on test <= Task Manager Specification =>
+TaskManager{tasks=[Task{taskName='One', due_date=2024-03-24, isCompleted=false}, Task{taskName='Two', due_date=2024-03-24, isCompleted=false}, Task{taskName='Five', due_date=2024-03-24, isCompleted=false}]}
+[Task{taskName='Five', due_date=2024-03-24, isCompleted=false}, Task{taskName='One', due_date=2024-03-24, isCompleted=false}, Task{taskName='Two', due_date=2024-03-24, isCompleted=false}]
+Working on test <= Task Manager Specification =>
+Working on test <= Task Manager Specification =>
+Working on test <= Task Manager Specification =>
+Task{taskName='Task 1', due_date=2024-03-24, isCompleted=true}
+Task{taskName='Task 2', due_date=2024-03-24, isCompleted=false}
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

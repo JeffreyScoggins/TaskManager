@@ -5,6 +5,8 @@ import org.swe6673.task.Task;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
+import static org.junit.jupiter.api.Assertions.*;
+
 
 public class TaskManager {
     private List<Task> tasks;
@@ -22,7 +24,7 @@ public class TaskManager {
         return null;
     }
 
-    public void addTask(Task... tasksToAdd) {
+    public void addTask(Task... tasksToAdd) throws NullPointerException {
         Arrays.stream(tasksToAdd).forEach(task -> tasks.add(task));
     }
     public void updateTask(Task task, String s) {
